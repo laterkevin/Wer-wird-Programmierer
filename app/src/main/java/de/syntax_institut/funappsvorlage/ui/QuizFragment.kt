@@ -55,8 +55,10 @@ class QuizFragment : Fragment() {
 
         // Hole die Hintergründe aus der Ressource
         backgroundNormal = ContextCompat.getDrawable(requireContext(), R.drawable.background_text)!!
-        backgroundWrong = ContextCompat.getDrawable(requireContext(), R.drawable.background_text_wrong)!!
-        backgroundCorrect = ContextCompat.getDrawable(requireContext(), R.drawable.background_text_correct)!!
+        backgroundWrong =
+            ContextCompat.getDrawable(requireContext(), R.drawable.background_text_wrong)!!
+        backgroundCorrect =
+            ContextCompat.getDrawable(requireContext(), R.drawable.background_text_correct)!!
 
         // Setze Preisstufe, Frage und Antworten
         setPriceQuestionAnswer()
@@ -83,12 +85,18 @@ class QuizFragment : Fragment() {
     private fun setPriceQuestionAnswer() {
         // Zeige die Frage an
         // TODO
+        binding.tvQuestion.text = viewModel.currentQuestion.question
 
         // Zeige die Antworten an
         // TODO
+        binding.tvAnswerA.text = viewModel.currentQuestion.answerA
+        binding.tvAnswerB.text = viewModel.currentQuestion.answerB
+        binding.tvAnswerC.text = viewModel.currentQuestion.answerC
+        binding.tvAnswerD.text = viewModel.currentQuestion.answerD
 
         // Zeige die Preisstufe an
         // TODO
+        binding.tvPrice.text = viewModel.currentQuestion.price.toString()
     }
 
     /**
@@ -99,12 +107,26 @@ class QuizFragment : Fragment() {
 
         // Überprüfe, ob die Antwort stimmt
         // TODO
+        viewModel.checkAnswer(answerIndex)
 
         // Wurde die Frage richtig beantwortet?
         // TODO
+        if (viewModel.lastAnswer == true) {
+            textView.background = backgroundNormal
+            textView.setTextColor(white)
+            setPriceQuestionAnswer()
+        } else {
+            textView.background = backgroundWrong
+            textView.setTextColor(black)
+            showEndDialog(getString(R.string.game_over))
+        }
 
         // Wenn das Spiel beendet werden soll (gewonnen)
         // TODO
+        if (viewModel.wonTheMillion == true) {
+            textView.background = backgroundCorrect
+            showEndDialog(getString(R.string.game_won))
+        }
     }
 
     /**
@@ -112,6 +134,17 @@ class QuizFragment : Fragment() {
      */
     private fun showEndDialog(title: String) {
         // TODO
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(title)
+            .setMessage(getString(R.string.you_won_amount, viewModel.moneyWon))
+            .setCancelable(false)
+            .setNegativeButton("verlassen") { _, _ ->
+                exitGame()
+            }
+            .setPositiveButton("spiel nochmal") { _, _ ->
+                restartGame()
+            }
+            .show()
     }
 
     /**
